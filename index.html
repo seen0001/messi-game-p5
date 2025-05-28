@@ -29,7 +29,9 @@
         <button id="backToMenuFromInstructions" style="margin-top: 18px;" onclick="showMenu()">Back to Menu</button>
     </div>
     <button id="startBtn" onclick="startGame()" style="display:none;">Start</button>
-    <button id="restartBtn" onclick="restartGame()" style="display:none;">Restart</button>
+    <button id="playAgainBtn" onclick="restartGame()"
+        style="display:none; position: absolute; left: 50%; top: calc(50% + 120px); transform: translate(-50%, 0); z-index: 30;">Play
+        Again</button>
 
     <div id="productionPage" class="card" style="display:none;">
         <!-- Removed: now in about.html -->
@@ -67,7 +69,7 @@
             document.getElementById("mainMenu").style.display = "none";
             document.getElementById("instructions").style.display = "block";
             document.getElementById("startBtn").style.display = "block";
-            document.getElementById("restartBtn").style.display = "none";
+            document.getElementById("playAgainBtn").style.display = "none";
         }
 
         function hideStartUI() {
@@ -98,7 +100,7 @@
                 bold.removeSprites();
                 bold = undefined;
             }
-            document.getElementById("restartBtn").style.display = "none";
+            document.getElementById("playAgainBtn").style.display = "none";
 
             player = createSprite(width / 2, height - 120, 120, 120);
             if (playerImg) player.addImage(playerImg);
@@ -175,7 +177,7 @@
                         if (lives <= 0) {
                             gameOver = true;
                             gameState = "gameover";
-                            document.getElementById("restartBtn").style.display = "block";
+                            document.getElementById("playAgainBtn").style.display = "block";
                         }
                     }
 
@@ -285,7 +287,7 @@
             document.getElementById("mainMenu").style.display = "block";
             document.getElementById("instructions").style.display = "none";
             document.getElementById("startBtn").style.display = "none";
-            document.getElementById("restartBtn").style.display = "none";
+            document.getElementById("playAgainBtn").style.display = "none";
         }
         function showAbout() {
             window.open('about.html', '_blank');
@@ -298,14 +300,14 @@
             document.getElementById("mainMenu").style.display = "none";
             document.getElementById("instructions").style.display = "block";
             document.getElementById("startBtn").style.display = "none";
-            document.getElementById("restartBtn").style.display = "none";
+            document.getElementById("playAgainBtn").style.display = "none";
         }
         // On load, show menu
         window.onload = function () {
             document.getElementById("mainMenu").style.display = "block";
             document.getElementById("instructions").style.display = "none";
             document.getElementById("startBtn").style.display = "none";
-            document.getElementById("restartBtn").style.display = "none";
+            document.getElementById("playAgainBtn").style.display = "none";
         };
         // Nav bar event listeners
         document.getElementById('navHome').onclick = function (e) { e.preventDefault(); showMenu(); setActiveNav('navHome'); };

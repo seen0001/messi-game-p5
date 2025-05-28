@@ -126,7 +126,7 @@ nav#mainNav a.active {
 #backToMenuFromInstructions,
 .about-btn,
 #startBtn,
-#restartBtn {
+#playAgainBtn {
   padding: 18px 40px;
   font-size: 2rem;
   font-family: "Luckiest Guy", "Fredoka One", cursive, sans-serif;
@@ -150,7 +150,7 @@ nav#mainNav a.active {
 #backToMenuFromInstructions:hover,
 .about-btn:hover,
 #startBtn:hover,
-#restartBtn:hover {
+#playAgainBtn:hover {
   transform: scale(1.08) rotate(-2deg);
   box-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.35), 0 4px 0 #222;
   background: linear-gradient(90deg, #004d98 0%, #a50044 100%);
