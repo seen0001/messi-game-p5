@@ -1,0 +1,225 @@
+/* Google Fonts import */
+@import url("https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Fredoka+One&display=swap");
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Fredoka One", "Luckiest Guy", cursive, sans-serif;
+  background: linear-gradient(135deg, #ffcb05 80%, #a50044 100%);
+  min-height: 100vh;
+  padding-top: 0;
+  color: #a50044;
+}
+
+body {
+  padding-top: 0;
+}
+
+body.about-bg nav#mainNav {
+  background: linear-gradient(90deg, transparent, #a50044 100%);
+}
+
+/* Navigation Bar */
+nav#mainNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  background: transparent;
+  z-index: 100;
+  padding: 0;
+}
+nav#mainNav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 12px;
+  display: flex;
+  align-items: center;
+  height: 64px;
+  justify-content: flex-end;
+}
+nav#mainNav li {
+  margin-right: 32px;
+}
+nav#mainNav a {
+  display: inline-block;
+  font-family: "Luckiest Guy", "Fredoka One", cursive, sans-serif;
+  font-size: 1.6rem;
+  color: #ffcb05;
+  text-decoration: none;
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: 2px solid #ffcb05;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+  margin-top: 6px;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+  text-shadow: 2px 2px 0 #222, 0 0 8px #ffcb05;
+}
+
+nav#mainNav a:hover,
+nav#mainNav a.active {
+  background: #ffcb05;
+  color: #a50044;
+  border-color: #004d98;
+  transform: scale(1.08) rotate(-2deg);
+}
+
+/* Main Menu & Card Styles */
+#mainMenu.card,
+#productionPage.card,
+#instructions.card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-2deg);
+  background: linear-gradient(135deg, #ffcb05 80%, #a50044 100%);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25), 0 2px 0 #222;
+  padding: 36px 48px;
+  font-size: 1.3rem;
+  z-index: 20;
+  text-align: left;
+  max-width: 540px;
+  display: block;
+  border: 6px solid #004d98;
+  color: #a50044;
+  font-family: "Fredoka One", "Luckiest Guy", cursive, sans-serif;
+  letter-spacing: 1px;
+}
+#mainMenu.card h1,
+#productionPage.card h1,
+#instructions.card h2 {
+  color: #a50044;
+  font-size: 3rem;
+  margin-bottom: 0;
+  text-align: center;
+  text-shadow: 2px 2px 0 #ffcb05, 0 0 8px #a50044;
+}
+#mainMenu.card h2,
+#productionPage.card h2 {
+  color: #004d98;
+  font-size: 2.2rem;
+  margin-top: 0;
+  margin-bottom: 12px;
+  text-align: center;
+  text-shadow: 2px 2px 0 #ffcb05, 0 0 8px #a50044;
+}
+#mainMenu.card ul,
+#productionPage.card ul,
+#instructions.card ul {
+  padding-left: 22px;
+}
+#mainMenu.card li,
+#productionPage.card li,
+#instructions.card li {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+
+/* Buttons */
+#menuPlayBtn,
+#menuAboutBtn,
+#backToMenuBtn,
+#menuInstructionsBtn,
+#backToMenuFromInstructions,
+.about-btn,
+#startBtn,
+#restartBtn {
+  padding: 18px 40px;
+  font-size: 2rem;
+  font-family: "Luckiest Guy", "Fredoka One", cursive, sans-serif;
+  background: linear-gradient(90deg, #a50044 0%, #004d98 100%);
+  color: #ffcb05;
+  border: 4px solid #ffcb05;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.25), 0 2px 0 #222;
+  cursor: pointer;
+  z-index: 10;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 0 #222, 0 0 8px #ffcb05;
+  transition: transform 0.1s, box-shadow 0.1s;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+#menuPlayBtn:hover,
+#menuAboutBtn:hover,
+#backToMenuBtn:hover,
+#menuInstructionsBtn:hover,
+#backToMenuFromInstructions:hover,
+.about-btn:hover,
+#startBtn:hover,
+#restartBtn:hover {
+  transform: scale(1.08) rotate(-2deg);
+  box-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.35), 0 4px 0 #222;
+  background: linear-gradient(90deg, #004d98 0%, #a50044 100%);
+}
+
+/* About Page Styles (non-card) */
+.about-main {
+  max-width: 900px;
+  margin: 140px auto 40px auto;
+  padding: 0 16px;
+}
+.about-main h1 {
+  color: #a50044;
+  font-family: "Luckiest Guy", "Fredoka One", cursive;
+  font-size: 3rem;
+  text-align: center;
+  text-shadow: 2px 2px 0 #ffcb05, 0 0 8px #a50044;
+}
+.about-main h2 {
+  color: #004d98;
+  font-family: "Fredoka One", cursive;
+  font-size: 2.2rem;
+  text-align: center;
+  text-shadow: 2px 2px 0 #ffcb05, 0 0 8px #a50044;
+}
+.about-main h3 {
+  color: #a50044;
+  font-family: "Fredoka One", cursive;
+  font-size: 1.5rem;
+}
+.about-assets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+  align-items: flex-end;
+}
+.about-asset {
+  text-align: center;
+}
+.about-asset img {
+  background: #fff;
+  padding: 8px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px #004d98;
+}
+.about-asset .caption {
+  margin-top: 8px;
+  color: #004d98;
+  font-family: "Luckiest Guy", cursive;
+  font-size: 1.1rem;
+}
+.about-main ul {
+  font-size: 1.1em;
+  color: #222;
+  padding-left: 22px;
+}
+.about-main li {
+  margin-bottom: 10px;
+}
+.about-fonts {
+  margin-top: 18px;
+  color: #222;
+  font-size: 1.1em;
+}
+.about-fonts span {
+  color: #004d98;
+}
+.about-back {
+  text-align: center;
+  margin-top: 32px;
+}
