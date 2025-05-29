@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <title>Messi the GOAT</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.min.js"></script>
     <script src="https://molleindustria.github.io/p5.play/lib/p5.play.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -25,6 +26,7 @@
             <li>Catch the balls to score points.</li>
             <li>Don't let them fall past you!</li>
             <li>You have 3 lives. Good luck!</li>
+            <li>Pause/Resume the game with the ESC key.</li>
         </ul>
         <button id="backToMenuFromInstructions" style="margin-top: 18px;" onclick="showMenu()">Back to Menu</button>
     </div>
@@ -54,11 +56,20 @@
         let countdownValue = 3;
         let countdownTimer = 0;
         const NAV_HEIGHT = 70; // or whatever your nav bar height is
+        // Sound variables
+        let hitSound, buuuhSound, suuuiSound;
+        // Kapow popups
+        let kapowPopups = [];
+        // High score
+        let highScore = 0;
 
         function preload() {
             playerImg = loadImage("images/messi.png");
             boldImg = loadImage("images/fodbold.avif");
             backgroundImg = loadImage("images/fodboldbane.png");
+            hitSound = loadSound("sounds/hit.mp3");
+            buuuhSound = loadSound("sounds/buuuh.mp3");
+            suuuiSound = loadSound("sounds/suuui.mp3");
         }
 
         function setup() {
@@ -150,6 +161,7 @@
                 drawingContext.shadowBlur = 8;
                 text("Score: " + score, 10, 20);
                 text("Lives: " + lives, 10, 60);
+                text("Highscore: " + highScore, 10, 140);
                 // Pause instruction
                 textSize(18);
                 strokeWeight(2);
@@ -157,7 +169,7 @@
                 stroke('#ffcb05');
                 drawingContext.shadowColor = '#fff';
                 drawingContext.shadowBlur = 4;
-                text("Press ESC to pause/resume", 12, 105);
+                text("Press ESC to pause/resume", 12, 180);
                 // Reset shadow for other text
                 drawingContext.shadowBlur = 0;
                 strokeWeight(1);
@@ -174,6 +186,7 @@
                         m.position.y = random(-200, -50);
                         m.position.x = random(20, width - 20);
                         lives--;
+                        if (buuuhSound) buuuhSound.play();
                         if (lives <= 0) {
                             gameOver = true;
                             gameState = "gameover";
@@ -185,10 +198,47 @@
                         score++;
                         m.position.y = random(-200, -50);
                         m.position.x = random(20, width - 20);
+                        if (hitSound) hitSound.play();
+                        if (score > 0 && score % 10 === 0) {
+                            if (suuuiSound) suuuiSound.play();
+                            // Add kapow popup
+                            kapowPopups.push({
+                                value: score,
+                                x: random(80, width - 80),
+                                y: random(120, height - 120),
+                                start: millis(),
+                                duration: 900
+                            });
+                        }
                     }
                 }
 
                 drawSprites();
+                // Draw kapow popups
+                for (let i = kapowPopups.length - 1; i >= 0; i--) {
+                    let popup = kapowPopups[i];
+                    let elapsed = millis() - popup.start;
+                    if (elapsed > popup.duration) {
+                        kapowPopups.splice(i, 1);
+                        continue;
+                    }
+                    let alpha = map(elapsed, 0, popup.duration, 255, 0);
+                    push();
+                    textFont('Luckiest Guy, Fredoka One, cursive');
+                    textAlign(CENTER, CENTER);
+                    textSize(80);
+                    stroke('#a50044');
+                    strokeWeight(10);
+                    fill(255, 203, 5, alpha);
+                    drawingContext.shadowColor = '#a50044';
+                    drawingContext.shadowBlur = 24;
+                    // Kapow effect: rotate and scale a bit
+                    translate(popup.x, popup.y);
+                    rotate(sin(elapsed / 80) * 0.2);
+                    scale(1.1 + 0.2 * sin(elapsed / 60));
+                    text(popup.value, 0, 0);
+                    pop();
+                }
             } else if (gameState === "gameover") {
                 // Cartoony Barcelona style for Game Over and Final Score
                 textFont('Luckiest Guy, Fredoka One, cursive');
@@ -202,9 +252,16 @@
                 text("Game Over", width / 2, height / 2 - 60);
                 textSize(36);
                 text("Final Score: " + score, width / 2, height / 2 + 10);
+                textSize(32);
+                text("Highscore: " + highScore, width / 2, height / 2 + 60);
                 // Reset shadow for other text
                 drawingContext.shadowBlur = 0;
                 strokeWeight(1);
+                // Update high score if needed
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('highScore', highScore);
+                }
             } else if (gameState === "paused") {
                 // Draw paused overlay
                 textFont('Luckiest Guy, Fredoka One, cursive');
@@ -261,6 +318,7 @@
                 if (gameState === "gameover") {
                     restartGame();
                 } else if (gameState === "start") {
+                    document.getElementById("mainMenu").style.display = "none";
                     startGame();
                 }
             }
@@ -288,6 +346,34 @@
             document.getElementById("instructions").style.display = "none";
             document.getElementById("startBtn").style.display = "none";
             document.getElementById("playAgainBtn").style.display = "none";
+            // Stop the game
+            gameState = "start";
+            gameOver = false;
+            // Remove player sprite
+            if (player) {
+                player.remove();
+                player = undefined;
+            }
+            // Remove all football sprites
+            if (bold) {
+                for (let i = 0; i < bold.length; i++) {
+                    bold[i].remove();
+                }
+                bold.removeSprites();
+                bold = undefined;
+            }
+            // Clear kapow popups
+            kapowPopups = [];
+            // Show highscore in main menu
+            const menu = document.getElementById("mainMenu");
+            let hsElem = document.getElementById("mainMenuHighscore");
+            if (!hsElem) {
+                hsElem = document.createElement("div");
+                hsElem.id = "mainMenuHighscore";
+                hsElem.style = "color:#004d98; font-family:'Luckiest Guy', cursive; font-size:2rem; margin-top:18px; text-shadow:2px 2px 0 #ffcb05, 0 0 8px #a50044;";
+                menu.appendChild(hsElem);
+            }
+            hsElem.textContent = `Highscore: ${highScore}`;
         }
         function showAbout() {
             window.open('about.html', '_blank');
@@ -304,6 +390,7 @@
         }
         // On load, show menu
         window.onload = function () {
+            highScore = Number(localStorage.getItem('highScore')) || 0;
             document.getElementById("mainMenu").style.display = "block";
             document.getElementById("instructions").style.display = "none";
             document.getElementById("startBtn").style.display = "none";
