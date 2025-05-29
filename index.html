@@ -8,9 +8,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.min.js"></script>
     <script src="https://molleindustria.github.io/p5.play/lib/p5.play.js"></script>
     <link rel="stylesheet" href="styles.css">
+
 </head>
 
 <body>
+    <!-- Click to Start Overlay -->
+    <div id="clickToStartOverlay"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;flex-direction:column;">
+        <div
+            style="color:#ffcb05;font-family:'Luckiest Guy',cursive;font-size:3rem;text-shadow:2px 2px 0 #a50044,0 0 8px #004d98;margin-bottom:24px;">
+            Messi the GOAT</div>
+        <button id="startOverlayBtn"
+            style="padding:22px 60px;font-size:2.2rem;font-family:'Luckiest Guy',cursive;background:linear-gradient(90deg,#a50044 0%,#004d98 100%);color:#ffcb05;border:4px solid #ffcb05;border-radius:22px;box-shadow:0 8px 32px 0 rgba(0,0,0,0.35),0 2px 0 #222;cursor:pointer;letter-spacing:2px;text-shadow:2px 2px 0 #222,0 0 8px #ffcb05;">Click
+            to Start</button>
+    </div>
     <!-- Navigation Bar -->
     <nav id="mainNav">
         <ul>
@@ -62,6 +73,10 @@
         let kapowPopups = [];
         // High score
         let highScore = 0;
+        // Anthem sound
+        let anthemSound;
+        // Whistle and stadium sounds
+        let whistleSound, stadiumSound;
 
         function preload() {
             playerImg = loadImage("images/messi.png");
@@ -70,6 +85,9 @@
             hitSound = loadSound("sounds/hit.mp3");
             buuuhSound = loadSound("sounds/buuuh.mp3");
             suuuiSound = loadSound("sounds/suuui.mp3");
+            anthemSound = loadSound("sounds/Official-Anthem.wav");
+            whistleSound = loadSound("sounds/whistle.mp3");
+            stadiumSound = loadSound("sounds/stadium.mp3");
         }
 
         function setup() {
@@ -89,6 +107,18 @@
         }
 
         function startGame() {
+            // Stop anthem
+            if (anthemSound && anthemSound.isPlaying()) anthemSound.stop();
+            // Play whistle
+            if (whistleSound) whistleSound.play();
+            // Start stadium sound loop (after whistle finishes)
+            if (stadiumSound) {
+                setTimeout(() => {
+                    if (gameState === "playing" && !stadiumSound.isPlaying()) stadiumSound.loop();
+                }, whistleSound && whistleSound.duration() ? whistleSound.duration() * 1000 : 800);
+            }
+            // Stop stadium sound if already playing (avoid overlap)
+            if (stadiumSound && stadiumSound.isPlaying()) stadiumSound.stop();
             gameState = "playing";
             hideStartUI();
             setupGame();
@@ -191,6 +221,7 @@
                             gameOver = true;
                             gameState = "gameover";
                             document.getElementById("playAgainBtn").style.display = "block";
+                            if (stadiumSound && stadiumSound.isPlaying()) stadiumSound.stop();
                         }
                     }
 
@@ -314,6 +345,11 @@
         }
 
         function keyPressed() {
+            // Prevent all key actions if the overlay is visible
+            const overlay = document.getElementById('clickToStartOverlay');
+            if (overlay && overlay.style.display !== 'none') {
+                return;
+            }
             if ((keyCode === ENTER || key === 'Enter')) {
                 if (gameState === "gameover") {
                     restartGame();
@@ -374,12 +410,28 @@
                 menu.appendChild(hsElem);
             }
             hsElem.textContent = `Highscore: ${highScore}`;
+            // Play anthem
+            if (anthemSound && !anthemSound.isPlaying()) anthemSound.loop();
+            // Stop stadium sound
+            if (stadiumSound && stadiumSound.isPlaying()) stadiumSound.stop();
         }
         function showAbout() {
             window.open('about.html', '_blank');
         }
         function menuPlay() {
             document.getElementById("mainMenu").style.display = "none";
+            // Stop anthem
+            if (anthemSound && anthemSound.isPlaying()) anthemSound.stop();
+            // Play whistle
+            if (whistleSound) whistleSound.play();
+            // Start stadium sound loop (after whistle finishes)
+            if (stadiumSound) {
+                setTimeout(() => {
+                    if (gameState === "playing" && !stadiumSound.isPlaying()) stadiumSound.loop();
+                }, whistleSound && whistleSound.duration() ? whistleSound.duration() * 1000 : 800);
+            }
+            // Stop stadium sound if already playing (avoid overlap)
+            if (stadiumSound && stadiumSound.isPlaying()) stadiumSound.stop();
             startGame();
         }
         function showInstructions() {
@@ -387,15 +439,75 @@
             document.getElementById("instructions").style.display = "block";
             document.getElementById("startBtn").style.display = "none";
             document.getElementById("playAgainBtn").style.display = "none";
+            // Play anthem
+            if (anthemSound && !anthemSound.isPlaying()) anthemSound.loop();
+            // Stop stadium sound
+            if (stadiumSound && stadiumSound.isPlaying()) stadiumSound.stop();
         }
-        // On load, show menu
+        // Utility to set inert/focusable state
+        function setInertWhileOverlay(active) {
+            const overlay = document.getElementById('clickToStartOverlay');
+            const nav = document.getElementById('mainNav');
+            const mainMenu = document.getElementById('mainMenu');
+            const instructions = document.getElementById('instructions');
+            const startBtn = document.getElementById('startBtn');
+            const playAgainBtn = document.getElementById('playAgainBtn');
+            const allInteractive = [nav, mainMenu, instructions, startBtn, playAgainBtn];
+            if (active) {
+                allInteractive.forEach(el => {
+                    if (el) {
+                        el.setAttribute('aria-hidden', 'true');
+                        el.setAttribute('inert', '');
+                        el.style.pointerEvents = 'none';
+                        // Remove from tab order
+                        el.querySelectorAll('a,button,input,select,textarea').forEach(focusEl => {
+                            focusEl.setAttribute('tabindex', '-1');
+                        });
+                    }
+                });
+                if (overlay) {
+                    overlay.removeAttribute('aria-hidden');
+                    overlay.removeAttribute('inert');
+                    overlay.style.pointerEvents = 'auto';
+                    overlay.querySelectorAll('a,button,input,select,textarea').forEach(focusEl => {
+                        focusEl.removeAttribute('tabindex');
+                    });
+                }
+            } else {
+                allInteractive.forEach(el => {
+                    if (el) {
+                        el.removeAttribute('aria-hidden');
+                        el.removeAttribute('inert');
+                        el.style.pointerEvents = '';
+                        el.querySelectorAll('a,button,input,select,textarea').forEach(focusEl => {
+                            focusEl.removeAttribute('tabindex');
+                        });
+                    }
+                });
+            }
+        }
+        // On load, show overlay and set inert
         window.onload = function () {
             highScore = Number(localStorage.getItem('highScore')) || 0;
-            document.getElementById("mainMenu").style.display = "block";
+            document.getElementById("clickToStartOverlay").style.display = "flex";
+            document.getElementById("mainMenu").style.display = "none";
             document.getElementById("instructions").style.display = "none";
             document.getElementById("startBtn").style.display = "none";
             document.getElementById("playAgainBtn").style.display = "none";
+            setInertWhileOverlay(true);
         };
+        // Click to Start overlay logic
+        document.getElementById('startOverlayBtn').onclick = function () {
+            document.getElementById('clickToStartOverlay').style.display = 'none';
+            if (anthemSound && !anthemSound.isPlaying()) anthemSound.loop();
+            showMenu();
+            setInertWhileOverlay(false);
+        };
+        // Also play anthem on first user interaction (for autoplay policy)
+        window.addEventListener('pointerdown', function playAnthemOnce() {
+            if (anthemSound && !anthemSound.isPlaying()) anthemSound.loop();
+            window.removeEventListener('pointerdown', playAnthemOnce);
+        });
         // Nav bar event listeners
         document.getElementById('navHome').onclick = function (e) { e.preventDefault(); showMenu(); setActiveNav('navHome'); };
         document.getElementById('navPlay').onclick = function (e) { e.preventDefault(); menuPlay(); setActiveNav('navPlay'); };
